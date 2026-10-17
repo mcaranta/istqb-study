@@ -834,6 +834,16 @@ body {
   <div id="weak-flashcard" class="hidden"></div>
 </div>
 
+<!-- History View -->
+<div id="view-history" class="view">
+  <div class="page-header">
+    <h1>Exam History</h1>
+    <p>Track your exam performance over time</p>
+  </div>
+  <div id="history-summary-stats"></div>
+  <div id="history-list"></div>
+</div>
+
 <!-- Exam Simulator View -->
 <div id="view-exam" class="view">
   <!-- Exam picker -->
@@ -868,6 +878,10 @@ body {
     <button class="nav-tab" data-view="weak" onclick="StudyApp.switchView('weak')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
       <span>Weak</span>
+    </button>
+    <button class="nav-tab" data-view="history" onclick="StudyApp.switchView('history')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="7" y1="17" x2="7" y2="13"/><line x1="12" y1="17" x2="12" y2="9"/><line x1="17" y1="17" x2="17" y2="5"/></svg>
+      <span>History</span>
     </button>
     <button class="nav-tab" data-view="exam" onclick="StudyApp.switchView('exam')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -4210,6 +4224,7 @@ var StudyApp = {
       case 'study': this.renderStudy(); break;
       case 'quiz': this.renderQuizSetup(); break;
       case 'weak': this.renderWeak(); break;
+      case 'history': this.renderHistory(); break;
       case 'exam': this.renderExamPicker(); break;
     }
   },
@@ -4308,10 +4323,17 @@ var StudyApp = {
       this.render();
     },
 
+    selectedOption: -1,
+    selectedOptions: [],
+
     render: function() {
-      // Summary
-      document.getElementById('study-summary').innerHTML =
-        '<div class="chapter-summary">' + (CHAPTER_SUMMARIES[this.selectedChapter] || '') + '</div>';
+      // Summary — CHAPTER_SUMMARIES values may be objects with .summary or plain strings
+      var sumData = CHAPTER_SUMMARIES[this.selectedChapter];
+      var sumHtml = '';
+      if (sumData) {
+        sumHtml = typeof sumData === 'object' ? (sumData.summary || sumData.content || '') : sumData;
+      }
+      document.getElementById('study-summary').innerHTML = '<div class="chapter-summary">' + sumHtml + '</div>';
 
       // Filters
       var filters = ['all', 'unmastered', 'flagged'];
@@ -4331,28 +4353,46 @@ var StudyApp = {
       }
 
       var q = this.filteredQuestions[this.currentIndex];
+      var isMulti = q.multiSelect === true;
       // Nav
       document.getElementById('study-nav').innerHTML =
         '<button class="btn btn-sm btn-outline" onclick="StudyApp.study.prev()" ' + (this.currentIndex === 0 ? 'disabled' : '') + '>&#8592; Prev</button>'
         + '<span class="progress-text">Card ' + (this.currentIndex + 1) + ' of ' + this.filteredQuestions.length + '</span>'
         + '<button class="btn btn-sm btn-outline" onclick="StudyApp.study.next()" ' + (this.currentIndex >= this.filteredQuestions.length - 1 ? 'disabled' : '') + '>Next &#8594;</button>';
 
-      // Flashcard
-      var correctAnswer;
-      if (Array.isArray(q.answer)) {
-        correctAnswer = q.answer.map(function(i) { return q.options[i]; }).join('<br>');
-      } else {
-        correctAnswer = q.options[q.answer];
-      }
-
+      // Flashcard with interactive options
       var fcHtml = '<div class="flashcard">'
-        + '<div class="q-number">Q' + q.id + ' <span class="q-chapter">' + (q.chapter || 'Ch ' + q.chapterNum) + '</span></div>'
-        + '<div class="q-text">' + q.text + '</div>';
+        + '<div class="q-number">Q' + q.id + ' <span class="q-chapter">' + (q.chapter || 'Ch ' + q.chapterNum) + '</span>'
+        + (isMulti ? ' <span class="q-chapter" style="background:var(--skipped-light);color:var(--skipped)">SELECT TWO</span>' : '')
+        + '</div>'
+        + '<div class="q-text">' + q.text + '</div>'
+        + '<div class="options" style="display:flex;flex-direction:column;gap:0.45rem;margin-top:0.8rem">';
+
+      q.options.forEach(function(opt, oi) {
+        var letter = String.fromCharCode(65 + oi);
+        var optText = opt.length > 3 && opt[1] === ')' ? opt.substring(3) : opt;
+        var cls = 'option-btn';
+        var disabled = '';
+
+        if (self.answerRevealed) {
+          disabled = ' disabled';
+          var isCorrect = Array.isArray(q.answer) ? q.answer.indexOf(oi) !== -1 : q.answer === oi;
+          var wasSelected = isMulti ? self.selectedOptions.indexOf(oi) !== -1 : self.selectedOption === oi;
+          if (isCorrect) cls += ' correct-opt';
+          else if (wasSelected) cls += ' wrong-opt';
+        } else {
+          var isSel = isMulti ? self.selectedOptions.indexOf(oi) !== -1 : self.selectedOption === oi;
+          if (isSel) cls += ' selected';
+        }
+
+        fcHtml += '<button class="' + cls + '"' + disabled + ' onclick="StudyApp.study.selectOption(' + oi + ')">'
+          + '<span class="letter">' + letter + '</span>'
+          + '<span>' + optText + '</span></button>';
+      });
+      fcHtml += '</div>';
 
       if (this.answerRevealed) {
         fcHtml += '<div class="answer-reveal">'
-          + '<div class="answer-label">Correct Answer</div>'
-          + '<div>' + correctAnswer + '</div>'
           + '<div class="justification">' + (q.justification || '') + '</div>'
           + '</div>';
       }
@@ -4361,17 +4401,48 @@ var StudyApp = {
 
       // Buttons
       if (!this.answerRevealed) {
-        document.getElementById('study-btns').innerHTML = '<button class="btn" onclick="StudyApp.study.reveal()">Show Answer</button>';
+        var canSubmit = isMulti ? this.selectedOptions.length === 2 : this.selectedOption >= 0;
+        document.getElementById('study-btns').innerHTML = '<button class="btn"' + (canSubmit ? '' : ' disabled') + ' onclick="StudyApp.study.checkAnswer()">Check Answer</button>';
       } else {
         document.getElementById('study-btns').innerHTML =
-          '<button class="btn btn-correct" onclick="StudyApp.study.gotIt()">Got it</button>'
-          + '<button class="btn btn-wrong" onclick="StudyApp.study.reviewAgain()">Review Again</button>';
+          '<button class="btn" onclick="StudyApp.study.nextCard()">Next Card &#8594;</button>';
       }
     },
 
-    reveal: function() {
-      this.answerRevealed = true;
+    selectOption: function(oi) {
+      if (this.answerRevealed) return;
+      var q = this.filteredQuestions[this.currentIndex];
+      if (q.multiSelect) {
+        var idx = this.selectedOptions.indexOf(oi);
+        if (idx !== -1) this.selectedOptions.splice(idx, 1);
+        else if (this.selectedOptions.length < 2) this.selectedOptions.push(oi);
+      } else {
+        this.selectedOption = oi;
+      }
       this.render();
+    },
+
+    checkAnswer: function() {
+      var q = this.filteredQuestions[this.currentIndex];
+      var correct;
+      if (q.multiSelect) {
+        var sorted = this.selectedOptions.slice().sort();
+        var expected = q.answer.slice().sort();
+        correct = sorted.length === expected.length && sorted.every(function(v, i) { return v === expected[i]; });
+      } else {
+        correct = this.selectedOption === q.answer;
+      }
+      this.answerRevealed = true;
+      StudyApp.recordAnswer(q.id, correct);
+      if (!correct) {
+        StudyApp.getStats(q.id).flagged = true;
+        StudyApp.saveState();
+      }
+      this.render();
+    },
+
+    nextCard: function() {
+      this.advance();
     },
 
     gotIt: function() {
@@ -4390,19 +4461,21 @@ var StudyApp = {
 
     advance: function() {
       this.answerRevealed = false;
+      this.selectedOption = -1;
+      this.selectedOptions = [];
       this.applyFilter();
       if (this.filteredQuestions.length === 0) { this.render(); return; }
       if (this.currentIndex >= this.filteredQuestions.length) this.currentIndex = 0;
-      else this.currentIndex = Math.min(this.currentIndex, this.filteredQuestions.length - 1);
+      else this.currentIndex = Math.min(this.currentIndex + 1, this.filteredQuestions.length - 1);
       this.render();
     },
 
     prev: function() {
-      if (this.currentIndex > 0) { this.currentIndex--; this.answerRevealed = false; this.render(); }
+      if (this.currentIndex > 0) { this.currentIndex--; this.answerRevealed = false; this.selectedOption = -1; this.selectedOptions = []; this.render(); }
     },
 
     next: function() {
-      if (this.currentIndex < this.filteredQuestions.length - 1) { this.currentIndex++; this.answerRevealed = false; this.render(); }
+      if (this.currentIndex < this.filteredQuestions.length - 1) { this.currentIndex++; this.answerRevealed = false; this.selectedOption = -1; this.selectedOptions = []; this.render(); }
     }
   },
 
@@ -4499,7 +4572,7 @@ var StudyApp = {
           if (isCorrect) cls += ' correct-opt';
           else if (isSelected) cls += ' wrong-opt';
         }
-        html += '<button class="option-btn ' + cls + '"'
+        html += '<button class="' + cls + '"'
           + (answered ? ' disabled' : ' onclick="StudyApp.quiz.selectOption(' + i + ')"')
           + '><span class="letter">' + letters[i] + '</span><span>' + q.options[i] + '</span></button>';
       }
@@ -4567,7 +4640,9 @@ var StudyApp = {
     nextQuestion: function() {
       if (!StudyApp.state.settings.instantFeedback && !this.feedbackShown) {
         // record without feedback
-        if (this.answers[this.currentIdx] !== -1) this.recordCurrent();
+        var a = this.answers[this.currentIdx];
+        var hasAnswer = Array.isArray(a) ? a.length > 0 : a !== -1;
+        if (hasAnswer) this.recordCurrent();
       }
       this.feedbackShown = false;
       if (this.currentIdx < this.questions.length - 1) {
@@ -4580,13 +4655,37 @@ var StudyApp = {
 
     submitAll: function() {
       var self = this;
-      // Record any unrecorded
+      var score = 0;
+      var chapterCorrect = {};
+      var chapterTotal = {};
+      // Record any unrecorded and tally score
       this.questions.forEach(function(q, idx) {
+        var correct = self.isCorrect(q, self.answers[idx]);
         if (!StudyApp.state.settings.instantFeedback) {
-          var correct = self.isCorrect(q, self.answers[idx]);
           StudyApp.recordAnswer(q.id, correct);
         }
+        if (correct) score++;
+        if (!chapterTotal[q.chapterNum]) { chapterTotal[q.chapterNum] = 0; chapterCorrect[q.chapterNum] = 0; }
+        chapterTotal[q.chapterNum]++;
+        if (correct) chapterCorrect[q.chapterNum]++;
       });
+      // Save to exam history for full-length quizzes (40 questions)
+      if (this.questions.length >= 40) {
+        var breakdown = {};
+        for (var ch in chapterTotal) {
+          breakdown[ch] = { correct: chapterCorrect[ch] || 0, total: chapterTotal[ch] };
+        }
+        var examLabel = 'Quiz';
+        if (this.exams.length === 1) examLabel = 'Quiz ' + this.exams[0];
+        StudyApp.state.examHistory.push({
+          exam: examLabel,
+          date: new Date().toISOString().split('T')[0],
+          score: score,
+          total: this.questions.length,
+          breakdown: breakdown
+        });
+        StudyApp.saveState();
+      }
       this.submitted = true;
       this.renderResults();
     },
@@ -5095,6 +5194,90 @@ var StudyApp = {
     document.getElementById('exam-picker').classList.remove('hidden');
     document.getElementById('exam-active').classList.add('hidden');
     document.getElementById('exam-results').classList.add('hidden');
+  },
+
+  /* ============================================================
+     HISTORY
+     ============================================================ */
+  renderHistory: function() {
+    var hist = this.state.examHistory.slice().reverse();
+
+    // Summary stats
+    if (hist.length === 0) {
+      document.getElementById('history-summary-stats').innerHTML = '';
+      document.getElementById('history-list').innerHTML =
+        '<div class="empty-state">'
+        + '<div class="empty-icon">&#128202;</div>'
+        + '<h3>No exams taken yet</h3>'
+        + '<p>Try the Exam Simulator!</p>'
+        + '</div>';
+      return;
+    }
+
+    var totalExams = hist.length;
+    var sumPct = 0, bestPct = 0, passCount = 0;
+    hist.forEach(function(h) {
+      var pct = Math.round((h.score / h.total) * 100);
+      sumPct += pct;
+      if (pct > bestPct) bestPct = pct;
+      if (pct >= 65) passCount++;
+    });
+    var avgPct = Math.round(sumPct / totalExams);
+    var passRate = Math.round((passCount / totalExams) * 100);
+
+    document.getElementById('history-summary-stats').innerHTML =
+      '<div class="stats-grid">'
+      + '<div class="stat-box"><div class="stat-num blue">' + totalExams + '</div><div class="stat-label">Exams</div></div>'
+      + '<div class="stat-box"><div class="stat-num">' + avgPct + '%</div><div class="stat-label">Average</div></div>'
+      + '<div class="stat-box"><div class="stat-num green">' + bestPct + '%</div><div class="stat-label">Best</div></div>'
+      + '<div class="stat-box"><div class="stat-num' + (passRate >= 65 ? ' green' : ' red') + '">' + passRate + '%</div><div class="stat-label">Pass Rate</div></div>'
+      + '</div>';
+
+    // List of exams
+    var listHtml = '';
+    hist.forEach(function(h, idx) {
+      var pct = Math.round((h.score / h.total) * 100);
+      var passed = pct >= 65;
+      var examName = h.exam;
+      if (examName === 'MIX') examName = 'Random Mix';
+      else if (examName.length <= 2) examName = 'Sample Exam ' + examName;
+
+      listHtml += '<div class="card" style="cursor:pointer;" onclick="StudyApp.toggleHistoryDetail(' + idx + ')">'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;">'
+        + '<div>'
+        + '<div style="font-weight:600;font-size:0.9rem;">' + examName + '</div>'
+        + '<div style="font-size:0.78rem;color:var(--fg-muted);">' + h.date + '</div>'
+        + '</div>'
+        + '<div style="text-align:right;">'
+        + '<div style="font-family:var(--font-mono);font-weight:700;font-size:1rem;color:' + (passed ? 'var(--correct)' : 'var(--wrong)') + ';">' + h.score + '/' + h.total + ' (' + pct + '%)</div>'
+        + '<span style="display:inline-block;font-size:0.7rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:99px;background:' + (passed ? 'var(--correct-light)' : 'var(--wrong-light)') + ';color:' + (passed ? 'var(--correct)' : 'var(--wrong)') + ';">' + (passed ? 'PASS' : 'FAIL') + '</span>'
+        + '</div></div>';
+
+      // Expandable breakdown
+      listHtml += '<div id="history-detail-' + idx + '" class="hidden" style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border);">';
+      if (h.breakdown) {
+        for (var ch = 1; ch <= 6; ch++) {
+          if (!h.breakdown[ch]) continue;
+          var bd = h.breakdown[ch];
+          var cPct = bd.total > 0 ? Math.round((bd.correct / bd.total) * 100) : 0;
+          listHtml += '<div class="chapter-row">'
+            + '<span class="chapter-name">Ch ' + ch + '</span>'
+            + '<div class="chapter-bar-wrap"><div class="chapter-bar" style="width:' + cPct + '%; background:' + (cPct >= 80 ? 'var(--correct)' : cPct >= 50 ? 'var(--accent)' : 'var(--wrong)') + '"></div></div>'
+            + '<span class="chapter-pct">' + bd.correct + '/' + bd.total + '</span>'
+            + '</div>';
+        }
+      } else {
+        listHtml += '<div style="font-size:0.82rem;color:var(--fg-muted);">No chapter breakdown available</div>';
+      }
+      listHtml += '</div></div>';
+    });
+
+    document.getElementById('history-list').innerHTML = listHtml;
+  },
+
+  toggleHistoryDetail: function(idx) {
+    var el = document.getElementById('history-detail-' + idx);
+    if (el) el.classList.toggle('hidden');
   },
 
   /* ============================================================
