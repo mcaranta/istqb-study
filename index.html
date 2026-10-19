@@ -1176,12 +1176,20 @@ body {
       <p>Custom practice session</p>
     </div>
     <div class="quiz-setup">
+      <h3>Quiz Mode</h3>
+      <div class="chip-group" id="quiz-mode-chips"></div>
+      <div id="quiz-def-direction" class="hidden">
+        <h3>Show</h3>
+        <div class="chip-group" id="quiz-direction-chips"></div>
+      </div>
       <h3>Number of Questions</h3>
       <div class="chip-group" id="quiz-count-chips"></div>
       <h3>Chapters</h3>
       <div class="chip-group" id="quiz-chapter-chips"></div>
-      <h3>Exam Source</h3>
-      <div class="chip-group" id="quiz-exam-chips"></div>
+      <div id="quiz-exam-section">
+        <h3>Exam Source</h3>
+        <div class="chip-group" id="quiz-exam-chips"></div>
+      </div>
       <div class="toggle-row mt-2">
         <span class="toggle-label">Instant Feedback</span>
         <button class="toggle" id="quiz-instant-toggle" onclick="StudyApp.quiz.toggleInstant()"></button>
@@ -1571,6 +1579,113 @@ var CHAPTER_SUMMARIES = {
   }
 };
 // === CHAPTER SUMMARIES END ===
+
+// === DEFINITIONS DATA START ===
+var DEFINITIONS = [
+  // Chapter 1 – Fundamentals of Testing
+  { term: "Testing", definition: "A set of activities to discover defects and evaluate the quality of software work products", chapter: 1 },
+  { term: "Debugging", definition: "The process of finding, analyzing, and removing the causes of failures in software", chapter: 1 },
+  { term: "Quality Assurance (QA)", definition: "A process-oriented, preventive approach focused on the implementation and improvement of processes to generate good products", chapter: 1 },
+  { term: "Quality Control (QC)", definition: "A product-oriented, corrective approach that focuses on activities supporting the achievement of appropriate levels of quality, including testing", chapter: 1 },
+  { term: "Error (Mistake)", definition: "A human action that produces an incorrect result, such as a wrong requirement or a coding mistake", chapter: 1 },
+  { term: "Defect (Bug/Fault)", definition: "An imperfection or flaw in a work product that may cause a failure when the code is executed", chapter: 1 },
+  { term: "Failure", definition: "An event in which a component or system does not perform a required function within specified limits", chapter: 1 },
+  { term: "Root Cause", definition: "A fundamental reason for the occurrence of a problem, identified through root cause analysis to prevent similar future issues", chapter: 1 },
+  { term: "Test Object", definition: "The work product being tested, such as code, requirements, or documentation", chapter: 1 },
+  { term: "Test Basis", definition: "The body of knowledge used as the basis for test analysis and design, such as requirements, design specifications, and code", chapter: 1 },
+  { term: "Test Condition", definition: "A testable aspect of a component or system identified as a basis for testing", chapter: 1 },
+  { term: "Test Case", definition: "A set of preconditions, inputs, actions, expected results and postconditions developed from test conditions", chapter: 1 },
+  { term: "Test Procedure", definition: "A sequence of test cases in execution order, including any required actions for setup and teardown", chapter: 1 },
+  { term: "Test Suite", definition: "A set of test scripts or test procedures to be executed in a specific test run, grouped for a common goal", chapter: 1 },
+  { term: "Testware", definition: "Work products created as output from test activities, such as test plans, test cases, test scripts, and test reports", chapter: 1 },
+  { term: "Validation", definition: "Checking whether the system meets the users' and stakeholders' actual needs in its operational environment", chapter: 1 },
+  { term: "Verification", definition: "Checking whether the system meets its specified requirements", chapter: 1 },
+  { term: "Test Objective", definition: "A reason or purpose for designing and executing a test, such as finding defects, gaining confidence, or reducing risk", chapter: 1 },
+  { term: "Exhaustive Testing", definition: "A test approach in which the test suite comprises all combinations of input values and preconditions; infeasible except in trivial cases", chapter: 1 },
+  { term: "Pesticide Paradox", definition: "The principle that if the same tests are repeated many times, they become increasingly ineffective in detecting new defects", chapter: 1 },
+  { term: "Defect Clustering", definition: "The principle that a small number of system components usually contain most of the defects discovered during testing", chapter: 1 },
+  { term: "Traceability", definition: "The ability to identify related items in documentation and software, such as linking requirements to test cases and test results", chapter: 1 },
+  // Chapter 2 – Testing Throughout the SDLC
+  { term: "Component Testing (Unit Testing)", definition: "Testing of individual components in isolation, often performed by developers using test harnesses or unit test frameworks", chapter: 2 },
+  { term: "Component Integration Testing", definition: "Testing focused on the interfaces and interactions between integrated components", chapter: 2 },
+  { term: "System Testing", definition: "Testing the overall behavior and capabilities of an entire system or product, including functional and non-functional aspects", chapter: 2 },
+  { term: "System Integration Testing", definition: "Testing the interfaces of the system under test with other systems and external services", chapter: 2 },
+  { term: "Acceptance Testing", definition: "Testing focused on validation and demonstrating readiness for deployment, ideally performed by intended users", chapter: 2 },
+  { term: "Alpha Testing", definition: "A form of acceptance testing performed at the developing organization's site by internal staff or customers", chapter: 2 },
+  { term: "Beta Testing", definition: "A form of acceptance testing performed at the users' own locations by potential or existing customers", chapter: 2 },
+  { term: "Functional Testing", definition: "Testing that evaluates the functions a component or system should perform, checking functional completeness, correctness, and appropriateness", chapter: 2 },
+  { term: "Non-functional Testing", definition: "Testing that evaluates attributes other than functional characteristics, such as performance, usability, reliability, and security", chapter: 2 },
+  { term: "Regression Testing", definition: "Testing to confirm that no adverse consequences have been caused by a change, often a strong candidate for automation", chapter: 2 },
+  { term: "Confirmation Testing (Re-testing)", definition: "Testing that confirms an original defect has been successfully fixed by re-executing previously failing tests", chapter: 2 },
+  { term: "Maintenance Testing", definition: "Testing triggered by modifications, upgrades, migrations, or retirement of operational software", chapter: 2 },
+  { term: "Impact Analysis", definition: "Assessment of the extent to which a change may affect existing tests and the system, to determine the scope of regression testing", chapter: 2 },
+  { term: "Test Level", definition: "A group of test activities that are organized and managed together, performed in relation to software at a given phase of development", chapter: 2 },
+  { term: "Test Type", definition: "A group of test activities related to specific quality characteristics, such as functional, non-functional, black-box, or white-box testing", chapter: 2 },
+  { term: "Sequential Development Model", definition: "An SDLC model where development phases occur in a linear order, such as the Waterfall model or V-model", chapter: 2 },
+  { term: "Iterative Development Model", definition: "An SDLC model where features are developed through repeated cycles (iterations), such as the Spiral model", chapter: 2 },
+  { term: "Incremental Development Model", definition: "An SDLC model where features are developed in increments and added to previously delivered versions, such as Unified Process", chapter: 2 },
+  { term: "DevOps", definition: "An organizational approach creating synergy by getting development (including testing) and operations to work together with CI/CD and fast feedback", chapter: 2 },
+  { term: "Continuous Integration (CI)", definition: "A practice where code changes are frequently merged into a shared repository, automatically built and tested to provide fast feedback", chapter: 2 },
+  { term: "Shift-Left", definition: "An approach where testing is performed earlier in the SDLC, such as reviewing specifications, writing tests before code, and early static analysis", chapter: 2 },
+  { term: "Test-Driven Development (TDD)", definition: "A development approach where test cases are written first, then code is written to satisfy the tests, and both are refactored", chapter: 2 },
+  { term: "Acceptance Test-Driven Development (ATDD)", definition: "A test-first approach where tests are derived from acceptance criteria as part of the system design process before development", chapter: 2 },
+  { term: "Behavior-Driven Development (BDD)", definition: "A development approach that expresses desired behavior in simple natural language using the Given/When/Then format", chapter: 2 },
+  // Chapter 3 – Static Testing
+  { term: "Static Testing", definition: "Testing that does not involve execution of the software; includes reviews and static analysis of work products", chapter: 3 },
+  { term: "Dynamic Testing", definition: "Testing that involves execution of the software to check its behavior against expected results", chapter: 3 },
+  { term: "Review", definition: "A type of static testing in which a work product is examined manually by one or more reviewers to identify anomalies", chapter: 3 },
+  { term: "Informal Review", definition: "A review that does not follow a defined process and requires no formal documented output; main objective is detecting anomalies", chapter: 3 },
+  { term: "Walkthrough", definition: "A review led by the author to evaluate quality, build confidence, educate reviewers, gain consensus, and detect anomalies", chapter: 3 },
+  { term: "Technical Review", definition: "A review performed by technically qualified reviewers and led by a moderator to gain consensus on technical problems and detect anomalies", chapter: 3 },
+  { term: "Inspection", definition: "The most formal type of review, following the complete generic process, with the main objective of finding the maximum number of anomalies", chapter: 3 },
+  { term: "Moderator (Facilitator)", definition: "The person who ensures the effective running of review meetings, including mediation, time management, and a safe review environment", chapter: 3 },
+  { term: "Scribe (Recorder)", definition: "The person who collates anomalies from reviewers and records review information such as decisions and new anomalies", chapter: 3 },
+  { term: "Reviewer", definition: "A participant who performs the review of a work product, identifying anomalies, recommendations, and questions", chapter: 3 },
+  { term: "Review Leader", definition: "The person who takes overall responsibility for the review, deciding who will be involved and organizing when and where it takes place", chapter: 3 },
+  { term: "Static Analysis", definition: "Tool-based examination of code or other work products without executing them, often incorporated into CI frameworks", chapter: 3 },
+  // Chapter 4 – Test Analysis and Design
+  { term: "Black-box Testing", definition: "Specification-based testing that derives tests from documentation external to the test object, without reference to its internal structure", chapter: 4 },
+  { term: "White-box Testing", definition: "Structure-based testing that derives tests from the system's internal structure or implementation, such as code and architecture", chapter: 4 },
+  { term: "Experience-based Testing", definition: "Testing that uses the tester's knowledge and experience for design and implementation of test cases", chapter: 4 },
+  { term: "Equivalence Partitioning", definition: "A black-box technique that divides input data into partitions expected to be processed the same way, requiring one test per partition", chapter: 4 },
+  { term: "Boundary Value Analysis", definition: "A black-box technique that focuses on testing the boundary values of equivalence partitions where developers are more likely to make errors", chapter: 4 },
+  { term: "Decision Table Testing", definition: "A black-box technique using a table to test combinations of conditions and their resulting actions, effective for complex business rules", chapter: 4 },
+  { term: "State Transition Testing", definition: "A black-box technique that designs tests based on valid and invalid transitions between states of a system", chapter: 4 },
+  { term: "Statement Coverage", definition: "A white-box metric measuring the percentage of executable statements exercised by test cases", chapter: 4 },
+  { term: "Branch Coverage (Decision Coverage)", definition: "A white-box metric measuring the percentage of branches (both true and false outcomes) exercised by test cases; subsumes statement coverage", chapter: 4 },
+  { term: "Error Guessing", definition: "An experience-based technique where the tester anticipates errors, defects, and failures based on past knowledge and fault attacks", chapter: 4 },
+  { term: "Exploratory Testing", definition: "An approach where tests are simultaneously designed, executed, and evaluated while the tester learns about the test object", chapter: 4 },
+  { term: "Checklist-based Testing", definition: "An experience-based technique where tests are designed and executed based on a checklist of test conditions", chapter: 4 },
+  { term: "Coverage Item", definition: "An attribute or combination of attributes derived from test conditions that serves as a basis for measuring test coverage", chapter: 4 },
+  { term: "Test Technique", definition: "A procedure used to define test conditions, design test cases, and identify coverage items in a systematic way", chapter: 4 },
+  // Chapter 5 – Managing the Test Activities
+  { term: "Test Plan", definition: "A document describing the test objectives, resources, schedule, and processes for a test project", chapter: 5 },
+  { term: "Test Strategy", definition: "A high-level description of the test levels to be performed and the testing within those levels, often part of the test plan", chapter: 5 },
+  { term: "Test Approach", definition: "The implementation of the test strategy for a specific project, defining test activities based on risk analysis and risk control", chapter: 5 },
+  { term: "Entry Criteria", definition: "Preconditions that must be met before undertaking a test activity, such as availability of resources, testware, and required quality level", chapter: 5 },
+  { term: "Exit Criteria", definition: "Conditions that must be achieved to declare a test activity completed, such as coverage levels and number of unresolved defects", chapter: 5 },
+  { term: "Definition of Done", definition: "In Agile, the team's objective metrics for a releasable item, equivalent to exit criteria", chapter: 5 },
+  { term: "Definition of Ready", definition: "In Agile, the entry criteria that a user story must fulfill before development and/or testing activities can start", chapter: 5 },
+  { term: "Test Monitoring", definition: "The ongoing checking of all test activities and comparison of actual progress against the plan", chapter: 5 },
+  { term: "Test Control", definition: "Taking the corrective actions necessary to meet the test objectives based on information from test monitoring", chapter: 5 },
+  { term: "Product Risk", definition: "A risk related to product quality characteristics such as missing functionality, incorrect calculations, or security vulnerabilities", chapter: 5 },
+  { term: "Project Risk", definition: "A risk related to management and control of the project, such as organizational, people, technical, or supplier issues", chapter: 5 },
+  { term: "Risk Level", definition: "A measure for a risk calculated from risk likelihood and risk impact; the higher the level, the more important its treatment", chapter: 5 },
+  { term: "Risk Mitigation", definition: "Implementing actions proposed in risk assessment to reduce the risk level, such as selecting appropriate test techniques and coverage", chapter: 5 },
+  { term: "Defect Report", definition: "A document reporting an anomaly found during testing, including identification, description, severity, priority, and status information", chapter: 5 },
+  { term: "Configuration Management", definition: "A discipline for identifying, controlling, and tracking work products as configuration items to ensure consistency and traceability", chapter: 5 },
+  { term: "Three-point Estimation", definition: "An estimation technique using optimistic (a), most likely (m), and pessimistic (b) estimates with the formula E = (a + 4*m + b) / 6", chapter: 5 },
+  { term: "Planning Poker", definition: "A variant of Wideband Delphi estimation commonly used in Agile, where estimates are made using cards with numbers representing effort size", chapter: 5 },
+  { term: "Test Pyramid", definition: "A model showing that different tests have different granularity, with many fast isolated tests at the bottom and fewer high-level tests at the top", chapter: 5 },
+  { term: "Testing Quadrants", definition: "A model grouping test levels with test types into four quadrants based on technology/business facing and team support/product critique", chapter: 5 },
+  // Chapter 6 – Test Tools
+  { term: "Test Automation", definition: "The use of software tools to execute tests, compare actual results with expected results, and support test activities to reduce manual effort", chapter: 6 },
+  { term: "Test Management Tool", definition: "A tool that facilitates management of the SDLC, requirements, tests, defects, and configuration to increase test process efficiency", chapter: 6 },
+  { term: "Static Analysis Tool", definition: "A tool that supports static testing by examining code or work products without executing them to detect defects and assess quality", chapter: 6 },
+  { term: "Test Execution Tool", definition: "A tool that facilitates automated test execution and coverage measurement, reducing repetitive manual work", chapter: 6 },
+  { term: "Performance Testing Tool", definition: "A non-functional testing tool that allows simulation of user load and measurement of system response times and behavior under stress", chapter: 6 }
+];
+// === DEFINITIONS DATA END ===
 
 // === QUESTION DATA START ===
 var ALL_QUESTIONS = [
@@ -4883,6 +4998,8 @@ var StudyApp = {
     count: 20,
     chapters: [1,2,3,4,5,6],
     exams: ['A','B','C','D'],
+    mode: 'questions',       // 'questions' or 'definitions'
+    defDirection: 'term-to-def', // 'term-to-def' or 'def-to-term'
     questions: [],
     answers: [],
     currentIdx: 0,
@@ -4902,15 +5019,79 @@ var StudyApp = {
 
     start: function() {
       var self = this;
-      var pool = ALL_QUESTIONS.filter(function(q) {
-        return self.chapters.indexOf(q.chapterNum) !== -1 && self.exams.indexOf(q.exam) !== -1;
-      });
-      // Shuffle
-      for (var i = pool.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+
+      if (this.mode === 'definitions') {
+        // Build definitions quiz
+        var defPool = DEFINITIONS.filter(function(d) {
+          return self.chapters.indexOf(d.chapter) !== -1;
+        });
+        // Shuffle pool
+        for (var i = defPool.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = defPool[i]; defPool[i] = defPool[j]; defPool[j] = tmp;
+        }
+        var selected = defPool.slice(0, this.count);
+        this.questions = selected.map(function(d) {
+          // Build distractors from same or nearby chapters first
+          var nearbyPool = DEFINITIONS.filter(function(other) {
+            return other.term !== d.term && Math.abs(other.chapter - d.chapter) <= 1;
+          });
+          var farPool = DEFINITIONS.filter(function(other) {
+            return other.term !== d.term && Math.abs(other.chapter - d.chapter) > 1;
+          });
+          // Shuffle both pools
+          for (var k = nearbyPool.length - 1; k > 0; k--) {
+            var r = Math.floor(Math.random() * (k + 1));
+            var t = nearbyPool[k]; nearbyPool[k] = nearbyPool[r]; nearbyPool[r] = t;
+          }
+          for (var k = farPool.length - 1; k > 0; k--) {
+            var r = Math.floor(Math.random() * (k + 1));
+            var t = farPool[k]; farPool[k] = farPool[r]; farPool[r] = t;
+          }
+          // Take 3 distractors, preferring nearby
+          var distractors = nearbyPool.slice(0, 3);
+          if (distractors.length < 3) {
+            distractors = distractors.concat(farPool.slice(0, 3 - distractors.length));
+          }
+
+          var isReverse = (self.defDirection === 'def-to-term');
+          var correctOption = isReverse ? d.term : d.definition;
+          var options = distractors.map(function(x) { return isReverse ? x.term : x.definition; });
+          options.push(correctOption);
+          // Shuffle options
+          for (var k = options.length - 1; k > 0; k--) {
+            var r = Math.floor(Math.random() * (k + 1));
+            var t = options[k]; options[k] = options[r]; options[r] = t;
+          }
+          var correctIdx = options.indexOf(correctOption);
+
+          return {
+            id: 'DEF-' + d.term.replace(/[^a-zA-Z0-9]/g, '').substring(0, 20),
+            chapter: 'Chapter ' + d.chapter,
+            chapterNum: d.chapter,
+            text: isReverse ? d.definition : ('What is ' + d.term + '?'),
+            options: options,
+            answer: correctIdx,
+            multiSelect: false,
+            justification: isReverse
+              ? ('The correct term is: ' + d.term + '. Definition: ' + d.definition)
+              : ('Definition of ' + d.term + ': ' + d.definition),
+            _isDefinition: true
+          };
+        });
+      } else {
+        // Standard questions mode
+        var pool = ALL_QUESTIONS.filter(function(q) {
+          return self.chapters.indexOf(q.chapterNum) !== -1 && self.exams.indexOf(q.exam) !== -1;
+        });
+        // Shuffle
+        for (var i = pool.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+        }
+        this.questions = pool.slice(0, this.count);
       }
-      this.questions = pool.slice(0, this.count);
+
       this.answers = this.questions.map(function(q) { return q.multiSelect ? [] : -1; });
       this.currentIdx = 0;
       this.submitted = false;
@@ -5003,7 +5184,9 @@ var StudyApp = {
       var q = this.questions[this.currentIdx];
       var ans = this.answers[this.currentIdx];
       var correct = this.isCorrect(q, ans);
-      StudyApp.recordAnswer(q.id, correct);
+      if (!q._isDefinition) {
+        StudyApp.recordAnswer(q.id, correct);
+      }
     },
 
     isCorrect: function(q, ans) {
@@ -5040,7 +5223,7 @@ var StudyApp = {
       // Record any unrecorded and tally score
       this.questions.forEach(function(q, idx) {
         var correct = self.isCorrect(q, self.answers[idx]);
-        if (!StudyApp.state.settings.instantFeedback) {
+        if (!StudyApp.state.settings.instantFeedback && !q._isDefinition) {
           StudyApp.recordAnswer(q.id, correct);
         }
         if (correct) score++;
@@ -5054,8 +5237,8 @@ var StudyApp = {
         for (var ch in chapterTotal) {
           breakdown[ch] = { correct: chapterCorrect[ch] || 0, total: chapterTotal[ch] };
         }
-        var examLabel = 'Quiz';
-        if (this.exams.length === 1) examLabel = 'Quiz ' + this.exams[0];
+        var examLabel = this.mode === 'definitions' ? 'Definitions' : 'Quiz';
+        if (this.mode !== 'definitions' && this.exams.length === 1) examLabel = 'Quiz ' + this.exams[0];
         StudyApp.state.examHistory.push({
           exam: examLabel,
           date: new Date().toISOString().split('T')[0],
@@ -5092,7 +5275,7 @@ var StudyApp = {
       var pct = Math.round((score / total) * 100);
 
       var html = '<div class="results-panel">'
-        + '<h2>Quiz Results</h2>'
+        + '<h2>' + (this.mode === 'definitions' ? 'Definitions Quiz Results' : 'Quiz Results') + '</h2>'
         + '<div class="score-big ' + (pct >= 65 ? 'pass' : 'fail') + '">' + pct + '%</div>'
         + '<div class="score-label">' + score + ' out of ' + total + ' correct</div>'
         + '<div class="stats-grid cols-3 mt-2">'
@@ -5139,9 +5322,30 @@ var StudyApp = {
 
   renderQuizSetup: function() {
     var q = this.quiz;
+
+    // Mode chips
+    var html = '';
+    [['questions', 'Questions'], ['definitions', 'Definitions']].forEach(function(m) {
+      html += '<button class="chip' + (q.mode === m[0] ? ' selected' : '') + '" onclick="StudyApp.quiz.mode=\'' + m[0] + '\';StudyApp.renderQuizSetup()">' + m[1] + '</button>';
+    });
+    document.getElementById('quiz-mode-chips').innerHTML = html;
+
+    // Direction chips (only for definitions mode)
+    var dirEl = document.getElementById('quiz-def-direction');
+    if (q.mode === 'definitions') {
+      dirEl.classList.remove('hidden');
+      html = '';
+      [['term-to-def', 'Term → Definition'], ['def-to-term', 'Definition → Term']].forEach(function(d) {
+        html += '<button class="chip' + (q.defDirection === d[0] ? ' selected' : '') + '" onclick="StudyApp.quiz.defDirection=\'' + d[0] + '\';StudyApp.renderQuizSetup()">' + d[1] + '</button>';
+      });
+      document.getElementById('quiz-direction-chips').innerHTML = html;
+    } else {
+      dirEl.classList.add('hidden');
+    }
+
     // Count chips
     var counts = [10, 20, 40];
-    var html = '';
+    html = '';
     counts.forEach(function(c) {
       html += '<button class="chip' + (q.count === c ? ' selected' : '') + '" onclick="StudyApp.quiz.count=' + c + ';StudyApp.renderQuizSetup()">' + c + '</button>';
     });
@@ -5155,13 +5359,19 @@ var StudyApp = {
     }
     document.getElementById('quiz-chapter-chips').innerHTML = html;
 
-    // Exam chips
-    html = '';
-    ['A','B','C','D'].forEach(function(e) {
-      var sel = q.exams.indexOf(e) !== -1;
-      html += '<button class="chip' + (sel ? ' selected' : '') + '" onclick="StudyApp.toggleQuizExam(\'' + e + '\')">Exam ' + e + '</button>';
-    });
-    document.getElementById('quiz-exam-chips').innerHTML = html;
+    // Exam chips (hide for definitions mode)
+    var examSection = document.getElementById('quiz-exam-section');
+    if (q.mode === 'definitions') {
+      examSection.classList.add('hidden');
+    } else {
+      examSection.classList.remove('hidden');
+      html = '';
+      ['A','B','C','D'].forEach(function(e) {
+        var sel = q.exams.indexOf(e) !== -1;
+        html += '<button class="chip' + (sel ? ' selected' : '') + '" onclick="StudyApp.toggleQuizExam(\'' + e + '\')">Exam ' + e + '</button>';
+      });
+      document.getElementById('quiz-exam-chips').innerHTML = html;
+    }
 
     q.renderToggle();
     document.getElementById('quiz-setup').classList.remove('hidden');
