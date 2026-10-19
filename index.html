@@ -5621,8 +5621,9 @@ var StudyApp = {
       if (examName === 'MIX') examName = 'Random Mix';
       else if (examName.length <= 2) examName = 'Sample Exam ' + examName;
 
-      listHtml += '<div class="card" style="cursor:pointer;" onclick="StudyApp.toggleHistoryDetail(' + idx + ')">'
-        + '<div style="display:flex;align-items:center;justify-content:space-between;">'
+      var realIdx = hist.length - 1 - idx;
+      listHtml += '<div class="card">'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="StudyApp.toggleHistoryDetail(' + idx + ')">'
         + '<div>'
         + '<div style="font-weight:600;font-size:0.9rem;">' + examName + '</div>'
         + '<div style="font-size:0.78rem;color:var(--fg-muted);">' + h.date + '</div>'
@@ -5640,7 +5641,7 @@ var StudyApp = {
           var bd = h.breakdown[ch];
           var cPct = bd.total > 0 ? Math.round((bd.correct / bd.total) * 100) : 0;
           listHtml += '<div class="chapter-row">'
-            + '<span class="chapter-name">Ch ' + ch + '</span>'
+            + '<span class="chapter-name">Chapter ' + ch + '</span>'
             + '<div class="chapter-bar-wrap"><div class="chapter-bar" style="width:' + cPct + '%; background:' + (cPct >= 80 ? 'var(--correct)' : cPct >= 50 ? 'var(--accent)' : 'var(--wrong)') + '"></div></div>'
             + '<span class="chapter-pct">' + bd.correct + '/' + bd.total + '</span>'
             + '</div>';
@@ -5648,15 +5649,33 @@ var StudyApp = {
       } else {
         listHtml += '<div style="font-size:0.82rem;color:var(--fg-muted);">No chapter breakdown available</div>';
       }
+      listHtml += '<button onclick="event.stopPropagation();StudyApp.deleteHistoryEntry(' + realIdx + ')" style="margin-top:0.6rem;padding:0.35rem 0.8rem;border:1px solid var(--wrong);border-radius:6px;background:transparent;color:var(--wrong);font:inherit;font-size:0.78rem;cursor:pointer;">Delete this entry</button>';
       listHtml += '</div></div>';
     });
 
+    listHtml += '<div style="text-align:center;margin-top:1.25rem;"><button onclick="StudyApp.clearAllHistory()" style="padding:0.4rem 1.2rem;border:1px solid var(--border);border-radius:99px;background:transparent;color:var(--fg-muted);font:inherit;font-size:0.8rem;cursor:pointer;">Clear All History</button></div>';
     document.getElementById('history-list').innerHTML = listHtml;
   },
 
   toggleHistoryDetail: function(idx) {
     var el = document.getElementById('history-detail-' + idx);
     if (el) el.classList.toggle('hidden');
+  },
+
+  deleteHistoryEntry: function(realIdx) {
+    if (!confirm('Delete this exam entry?')) return;
+    this.state.examHistory.splice(realIdx, 1);
+    this.saveState();
+    this.renderHistory();
+    this.renderDashboard();
+  },
+
+  clearAllHistory: function() {
+    if (!confirm('Clear all exam history? This cannot be undone.')) return;
+    this.state.examHistory = [];
+    this.saveState();
+    this.renderHistory();
+    this.renderDashboard();
   },
 
   /* ============================================================
