@@ -4942,13 +4942,13 @@ var StudyApp = {
       var pool;
       if (examCode === 'MIX') {
         pool = ALL_QUESTIONS.slice();
+        for (var i = pool.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+        }
       } else {
         pool = ALL_QUESTIONS.filter(function(q) { return q.exam === examCode; });
-      }
-      // Shuffle
-      for (var i = pool.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+        pool.sort(function(a, b) { return parseInt(a.id) - parseInt(b.id); });
       }
       this.questions = pool.slice(0, 40);
       this.answers = this.questions.map(function(q) { return q.multiSelect ? [] : -1; });
