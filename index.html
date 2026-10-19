@@ -108,15 +108,224 @@ body {
   border: none;
   color: var(--fg-muted);
   font-family: var(--font-body);
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 500;
   cursor: pointer;
   padding: 6px 0;
   transition: color 0.15s;
 }
-.nav-tab svg { width: 22px; height: 22px; stroke-width: 1.8; }
+.nav-tab svg { width: 20px; height: 20px; stroke-width: 1.8; }
 .nav-tab.active { color: var(--accent); }
 .nav-tab:hover { color: var(--accent); }
+
+/* Guide View */
+.guide-quick-ref {
+  background: var(--accent-light);
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+.guide-quick-ref h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: var(--accent);
+}
+.guide-quick-ref-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem 1rem;
+}
+.guide-quick-ref-item {
+  font-size: 0.82rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+.guide-quick-ref-item .label {
+  color: var(--fg-muted);
+}
+.guide-quick-ref-item .value {
+  font-weight: 600;
+}
+.guide-klevel-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+.guide-klevel {
+  border-radius: var(--radius);
+  padding: 1rem;
+  border: 1px solid var(--border);
+}
+.guide-klevel.k1 { background: var(--correct-light); border-color: var(--correct); }
+.guide-klevel.k2 { background: var(--skipped-light); border-color: var(--skipped); }
+.guide-klevel.k3 { background: var(--wrong-light); border-color: var(--wrong); }
+.guide-klevel h4 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+.guide-klevel.k1 h4 { color: var(--correct); }
+.guide-klevel.k2 h4 { color: var(--skipped); }
+.guide-klevel.k3 h4 { color: var(--wrong); }
+.guide-klevel p {
+  font-size: 0.8rem;
+  color: var(--fg-muted);
+  line-height: 1.5;
+}
+.guide-klevel .klevel-meta {
+  font-size: 0.75rem;
+  margin-top: 0.4rem;
+  font-weight: 500;
+  color: var(--fg);
+}
+.guide-chapter-accordion {
+  margin-bottom: 1rem;
+}
+.guide-ch-header {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.35rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-body);
+  color: var(--fg);
+  text-align: left;
+  transition: border-color 0.15s;
+}
+.guide-ch-header:hover { border-color: var(--accent); }
+.guide-ch-header .ch-num {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--accent);
+  color: #fff;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.guide-ch-header .ch-info { flex: 1; min-width: 0; }
+.guide-ch-header .ch-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.guide-ch-header .ch-meta {
+  font-size: 0.72rem;
+  color: var(--fg-muted);
+}
+.guide-ch-header .ch-target {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.guide-ch-header .ch-arrow {
+  font-size: 0.7rem;
+  color: var(--fg-muted);
+  transition: transform 0.2s;
+}
+.guide-ch-header.open .ch-arrow { transform: rotate(180deg); }
+.guide-ch-body {
+  display: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 0.35rem;
+  margin-top: -0.2rem;
+}
+.guide-ch-body.open { display: block; }
+.guide-ch-body .ch-bar-track {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  margin-bottom: 0.6rem;
+  overflow: hidden;
+}
+.guide-ch-body .ch-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--accent);
+}
+.guide-ch-body ul {
+  list-style: none;
+  padding: 0;
+}
+.guide-ch-body li {
+  font-size: 0.8rem;
+  padding: 0.25rem 0;
+  padding-left: 1.2rem;
+  position: relative;
+  color: var(--fg-muted);
+}
+.guide-ch-body li::before {
+  content: "\2022";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 700;
+}
+.guide-ch-body .running-total {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-top: 0.5rem;
+  text-align: right;
+}
+.guide-tips-list {
+  list-style: none;
+  padding: 0;
+}
+.guide-tips-list li {
+  font-size: 0.84rem;
+  padding: 0.5rem 0;
+  padding-left: 2rem;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+  color: var(--fg);
+}
+.guide-tips-list li:last-child { border-bottom: none; }
+.guide-tips-list li .tip-icon {
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  font-size: 1rem;
+}
+.guide-exam-tips {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.4rem;
+}
+.guide-exam-tip {
+  font-size: 0.82rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg);
+  border-radius: calc(var(--radius) - 2px);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.guide-exam-tip .tip-bullet {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
 
 /* Views */
 .view { display: none; }
@@ -770,6 +979,171 @@ body {
   </div>
 </div>
 
+<!-- Guide View -->
+<div id="view-guide" class="view">
+  <div class="page-header">
+    <h1>Exam Guide</h1>
+    <p>ISTQB CTFL v4.0 - How to Pass</p>
+  </div>
+
+  <!-- Quick Reference -->
+  <div class="guide-quick-ref">
+    <h3>Quick Reference</h3>
+    <div class="guide-quick-ref-grid">
+      <div class="guide-quick-ref-item"><span class="label">Pass Mark:</span> <span class="value">26 pts (65%)</span></div>
+      <div class="guide-quick-ref-item"><span class="label">Total Points:</span> <span class="value">40 pts</span></div>
+      <div class="guide-quick-ref-item"><span class="label">Duration:</span> <span class="value">60 min (75 non-native)</span></div>
+      <div class="guide-quick-ref-item"><span class="label">Questions:</span> <span class="value">40</span></div>
+      <div class="guide-quick-ref-item"><span class="label">Largest Ch:</span> <span class="value">Ch 4 (11 Qs)</span></div>
+      <div class="guide-quick-ref-item"><span class="label">K3 Focus:</span> <span class="value">Ch 4 &amp; 5</span></div>
+      <div class="guide-quick-ref-item"><span class="label">Easy Starts:</span> <span class="value">Ch 1, 3 &amp; 6</span></div>
+    </div>
+  </div>
+
+  <!-- K-Level System -->
+  <div style="font-weight:600; font-size:0.95rem; margin-bottom:0.5rem;">K-Level System</div>
+  <div class="guide-klevel-cards">
+    <div class="guide-klevel k1">
+      <h4>K1: Remember</h4>
+      <p>Recognise a term, list, or definition. Fastest questions if you do flashcards. Common in early chapters and tool basics.</p>
+      <div class="klevel-meta">8 questions &middot; ~1 min each</div>
+    </div>
+    <div class="guide-klevel k2">
+      <h4>K2: Understand</h4>
+      <p>Explain why something is true, compare options, classify an example. Most of the exam sits here. Need to know how ideas fit together.</p>
+      <div class="klevel-meta">24 questions &middot; ~1 min each</div>
+    </div>
+    <div class="guide-klevel k3">
+      <h4>K3: Apply</h4>
+      <p>Use a technique on a short scenario. Pick boundary values, choose a test level, select next step in risk-based plan. Chapters 4 and 5 carry most K3 weight.</p>
+      <div class="klevel-meta">8 questions &middot; ~3 min each</div>
+    </div>
+  </div>
+
+  <!-- Chapter-by-Chapter Strategy -->
+  <div style="font-weight:600; font-size:0.95rem; margin-bottom:0.5rem;">Chapter Strategy</div>
+  <div class="guide-chapter-accordion">
+
+    <button class="guide-ch-header" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
+      <span class="ch-num">1</span>
+      <span class="ch-info"><span class="ch-title">Fundamentals of Testing</span><span class="ch-meta">8 Qs (20%) &middot; K1=2, K2=6</span></span>
+      <span class="ch-target">7-8/8</span>
+      <span class="ch-arrow">&#9660;</span>
+    </button>
+    <div class="guide-ch-body">
+      <div class="ch-bar-track"><div class="ch-bar-fill" style="width:93.75%"></div></div>
+      <ul>
+        <li>Bank these early - mostly definitions and principles</li>
+        <li>Must know: 7 testing principles, testing vs debugging, test activities, QA vs QC</li>
+      </ul>
+      <div class="running-total">Running total: 7-8 points</div>
+    </div>
+
+    <button class="guide-ch-header" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
+      <span class="ch-num">2</span>
+      <span class="ch-info"><span class="ch-title">Testing Throughout the SDLC</span><span class="ch-meta">6 Qs (15%) &middot; K1=2, K2=4</span></span>
+      <span class="ch-target">5-6/6</span>
+      <span class="ch-arrow">&#9660;</span>
+    </button>
+    <div class="guide-ch-body">
+      <div class="ch-bar-track"><div class="ch-bar-fill" style="width:91.67%"></div></div>
+      <ul>
+        <li>Connect testing to lifecycle models (waterfall, agile, DevOps)</li>
+        <li>Must know: 4 test levels, test types, maintenance testing, shift-left</li>
+      </ul>
+      <div class="running-total">Running total: 12-14 points</div>
+    </div>
+
+    <button class="guide-ch-header" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
+      <span class="ch-num">3</span>
+      <span class="ch-info"><span class="ch-title">Static Testing</span><span class="ch-meta">4 Qs (10%) &middot; K1=2, K2=2</span></span>
+      <span class="ch-target">4/4</span>
+      <span class="ch-arrow">&#9660;</span>
+    </button>
+    <div class="guide-ch-body">
+      <div class="ch-bar-track"><div class="ch-bar-fill" style="width:100%"></div></div>
+      <ul>
+        <li>"Free" points if you know review types</li>
+        <li>Must know: static vs dynamic, review types (informal/walkthrough/technical/inspection), roles, success factors</li>
+      </ul>
+      <div class="running-total">Running total: 16-18 points</div>
+    </div>
+
+    <button class="guide-ch-header" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
+      <span class="ch-num">4</span>
+      <span class="ch-info"><span class="ch-title">Test Analysis and Design</span><span class="ch-meta">11 Qs (27.5%) &middot; K2=6, K3=5</span></span>
+      <span class="ch-target">8+/11</span>
+      <span class="ch-arrow">&#9660;</span>
+    </button>
+    <div class="guide-ch-body">
+      <div class="ch-bar-track"><div class="ch-bar-fill" style="width:72.73%"></div></div>
+      <ul>
+        <li>THE BIGGEST CHAPTER - deserves the most study time</li>
+        <li>Must know: EP, BVA (2-value and 3-value), decision tables, state transition, statement/branch coverage, error guessing, exploratory testing, ATDD</li>
+        <li>K3 questions ask "how many test cases?" - practice with numbers</li>
+      </ul>
+      <div class="running-total">Running total: 24-26 points (near pass line!)</div>
+    </div>
+
+    <button class="guide-ch-header" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
+      <span class="ch-num">5</span>
+      <span class="ch-info"><span class="ch-title">Managing Test Activities</span><span class="ch-meta">9 Qs (22.5%) &middot; K1=1, K2=5, K3=3</span></span>
+      <span class="ch-target">7+/9</span>
+      <span class="ch-arrow">&#9660;</span>
+    </button>
+    <div class="guide-ch-body">
+      <div class="ch-bar-track"><div class="ch-bar-fill" style="width:77.78%"></div></div>
+      <ul>
+        <li>Often decides pass vs fail</li>
+        <li>Must know: test plan contents, estimation techniques (three-point formula: E=(a+4m+b)/6), risk-based testing, product vs project risk, defect reports, configuration management</li>
+      </ul>
+      <div class="running-total">Running total: 31-33 points</div>
+    </div>
+
+    <button class="guide-ch-header" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
+      <span class="ch-num">6</span>
+      <span class="ch-info"><span class="ch-title">Test Tools</span><span class="ch-meta">2 Qs (5%) &middot; K1=1, K2=1</span></span>
+      <span class="ch-target">2/2</span>
+      <span class="ch-arrow">&#9660;</span>
+    </button>
+    <div class="guide-ch-body">
+      <div class="ch-bar-track"><div class="ch-bar-fill" style="width:100%"></div></div>
+      <ul>
+        <li>Easy points to close the exam</li>
+        <li>Must know: tool categories, benefits and risks of automation</li>
+      </ul>
+      <div class="running-total">Final total: 33-35 points (comfortable pass)</div>
+    </div>
+
+  </div>
+
+  <!-- Study Tips -->
+  <div class="card">
+    <div style="font-weight:600; font-size:0.95rem; margin-bottom:0.5rem;">Study Tips</div>
+    <ol class="guide-tips-list">
+      <li><span class="tip-icon">&#128161;</span>Chapters 4 and 5 are half the exam - plan extra study time there</li>
+      <li><span class="tip-icon">&#128161;</span>K3 questions need worked examples, not just definitions</li>
+      <li><span class="tip-icon">&#128161;</span>Use official sample exams only after chapter mocks feel solid</li>
+      <li><span class="tip-icon">&#128161;</span>Static testing (Chapter 3) is short but easy points - don't skip it</li>
+      <li><span class="tip-icon">&#128161;</span>Track progress by questions per chapter</li>
+      <li><span class="tip-icon">&#128161;</span>A balanced path: strong Ch 1-3 and 6, solid in 4-5, lands you at or above 26/40</li>
+    </ol>
+  </div>
+
+  <!-- Exam Day Tips -->
+  <div class="card">
+    <div style="font-weight:600; font-size:0.95rem; margin-bottom:0.5rem;">Exam Day Tips</div>
+    <div class="guide-exam-tips">
+      <div class="guide-exam-tip"><span class="tip-bullet"></span>Read each question twice before looking at answers</div>
+      <div class="guide-exam-tip"><span class="tip-bullet"></span>Flag uncertain questions and come back - don't get stuck</div>
+      <div class="guide-exam-tip"><span class="tip-bullet"></span>K3 questions take longer - budget 3 minutes each</div>
+      <div class="guide-exam-tip"><span class="tip-bullet"></span>Eliminate obviously wrong answers first</div>
+      <div class="guide-exam-tip"><span class="tip-bullet"></span>Watch for "NOT" and "MOST" in question stems</div>
+      <div class="guide-exam-tip"><span class="tip-bullet"></span>Trust your first instinct unless you find a clear reason to change</div>
+    </div>
+  </div>
+</div>
+
 <!-- Study View -->
 <div id="view-study" class="view">
   <!-- Chapter picker -->
@@ -866,6 +1240,10 @@ body {
     <button class="nav-tab active" data-view="dashboard" onclick="StudyApp.switchView('dashboard')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span>Home</span>
+    </button>
+    <button class="nav-tab" data-view="guide" onclick="StudyApp.switchView('guide')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>
+      <span>Guide</span>
     </button>
     <button class="nav-tab" data-view="study" onclick="StudyApp.switchView('study')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
@@ -4221,6 +4599,7 @@ var StudyApp = {
   renderCurrentView: function() {
     switch(this.state.currentView) {
       case 'dashboard': this.renderDashboard(); break;
+      case 'guide': break; /* static content, no render needed */
       case 'study': this.renderStudy(); break;
       case 'quiz': this.renderQuizSetup(); break;
       case 'weak': this.renderWeak(); break;
